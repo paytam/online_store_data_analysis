@@ -20,7 +20,7 @@ from typing import List, Dict
 register_page(__name__, name="Products", order=3)
 
 # load ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-pandas_helper:PandasHelper=PandasHelper(file_path='../../dataset/sample_data.xlsx')
+pandas_helper: PandasHelper = PandasHelper(file_path="../../dataset/merged_data.csv")
 
 # html ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -38,7 +38,11 @@ mySelectors = html.Div(
                                     children="Class:",
                                     className="",
                                 ),
-                                dcc.Dropdown(id="product_Class", multi=True),
+                                dcc.Dropdown(
+                                    pandas_helper.df["Description"].unique(),
+                                    id="product_Class",
+                                    multi=True,
+                                ),
                             ],
                             className="mb-4",
                         ),
@@ -63,8 +67,7 @@ layout = html.Div(
             [
                 html.Div(
                     id="cards",
-                    children=[
-                    ],
+                    children=[],
                     className="row mx-0 mt-4",
                 ),
                 html.Div(
@@ -75,8 +78,13 @@ layout = html.Div(
                                 html.Div(
                                     [
                                         dash_table.DataTable(
-                                            data=pandas_helper.df.head(100).to_dict('records'),
-                                            columns=[{"name": i, "id": i} for i in pandas_helper.df.columns],
+                                            data=pandas_helper.df.head(100).to_dict(
+                                                "records"
+                                            ),
+                                            columns=[
+                                                {"name": i, "id": i}
+                                                for i in pandas_helper.df.columns
+                                            ],
                                             id="product_table_result_1",
                                             # row_selectable="single",
                                             page_size=50,
@@ -86,7 +94,7 @@ layout = html.Div(
                                             sort_action="custom",
                                             sort_mode="multi",
                                             sort_by=[],
-                                            fixed_rows={'headers': True},
+                                            fixed_rows={"headers": True},
                                             style_table={
                                                 "maxHeight": "313px",
                                             },
@@ -117,3 +125,12 @@ layout = html.Div(
 
 
 # callbacks ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@callback(
+    Output("product_table_result_1", "data"),
+    Input("product_Class", "value"),
+)
+def get_invoices_by_product(v):
+    if v is None:
+        return (no_update,)
+    df = pandas_helper.df
+    return (df[["Description" == v]].to_dict("records"),)

@@ -2,6 +2,10 @@ import os
 
 
 class PathValidation:
+    """"
+    Use this class to detect a given path is valid or not.
+    we use the python descriptor concept to implement.
+    """
     def __init__(self, value):
         self._validate(value)
         self.value = value

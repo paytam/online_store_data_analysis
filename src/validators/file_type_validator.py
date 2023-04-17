@@ -6,6 +6,10 @@ from .path_validator import PathValidation
 
 
 class FileTypeValidator:
+    """
+    Use this class to detect a given file has valid extension or not.
+    we use the python descriptor concept to implement.
+    """
     def __init__(self, file_path: str, valid_extensions: List[str]):
         self._validate(file_path, valid_extensions)
         self.file_path = file_path

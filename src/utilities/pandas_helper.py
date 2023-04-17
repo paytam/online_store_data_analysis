@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 
@@ -12,8 +12,9 @@ class PandasHelper:
     _file_path: PathValidation
     _file_type:FileType
     _df: pd.DataFrame
+    _sheet_name=Optional[str]
 
-    def __init__(self, file_path) -> None:
+    def __init__(self, file_path, sheet_name:Optional[str]=None) -> None:
         # check file path existed
         self._file_path = PathValidation(file_path)
 
@@ -22,6 +23,7 @@ class PandasHelper:
 
         # guess file type
         self._file_type:FileType=FileType.initiate(file_path=self.file_path)
+        self._sheet_name=sheet_name
 
         self._load_dataframe_in_memory()
 
@@ -30,7 +32,10 @@ class PandasHelper:
         if self._file_type == FileType.CSV:
             self._df = pd.read_csv(self.file_path)
         elif self._file_type == FileType.EXCEL:
-            self._df = pd.read_excel(self.file_path)
+            if self._sheet_name is not None:
+                self._df = pd.read_excel(self.file_path,sheet_name=self._sheet_name)
+            else:
+                self._df = pd.read_excel(self.file_path)
 
     @property
     def file_path(self) -> str:
