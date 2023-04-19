@@ -6,5 +6,4 @@ dash
 dash-bootstrap-components
 dash-draggable
 pyaml
-astral
-countryinfo
+pycountry-convert
